@@ -106,7 +106,7 @@ This is where you'll find potential matches!
 - The card rotates as you drag for a natural feel
 - When you run out of cards, you'll see a "All caught up!" message
 
-### 2. 💬 **Messages Screen (Chats)**
+### 2. 💬 **Chats Screen **
 
 View all your conversations in one place!
 
