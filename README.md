@@ -79,7 +79,7 @@ Before you begin, ensure you have the following installed:
 
 ## 📖 How to Use the App
 
-### 1. 🏠 **Discover Screen (Home)**
+### 1. 🏠 **Home Screen **
 
 This is where you'll find potential matches!
 
