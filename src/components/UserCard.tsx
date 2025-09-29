@@ -1,13 +1,15 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import React, { useCallback } from 'react';
+import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Reanimated, {
+  Extrapolate,
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { SwipeAction, UserCardProps } from '../types';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -15,205 +17,188 @@ const CARD_WIDTH = screenWidth * 0.9;
 const CARD_HEIGHT = screenHeight * 0.7;
 const SWIPE_THRESHOLD = 120;
 const SWIPE_VELOCITY_THRESHOLD = 800;
-const ROTATION_FACTOR = 0.08;
 const ANIMATION_DURATION = 250;
+
+const SPRING_CONFIG = {
+  damping: 15,
+  stiffness: 120,
+  mass: 1,
+};
 
 export const UserCard: React.FC<UserCardProps> = ({
   user,
   onSwipe,
   isTop = false,
 }) => {
-  const translateX = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(0)).current;
-  const rotate = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(1)).current;
-  const scale = useRef(new Animated.Value(1)).current;
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(1);
+  const isAnimating = useSharedValue(false);
 
-  const isAnimating = useRef(false);
-
-  const resetCard = useCallback(() => {
-    if (isAnimating.current) return;
-
-    isAnimating.current = true;
-    Animated.parallel([
-      Animated.spring(translateX, {
-        toValue: 0,
-        tension: 80,
-        friction: 10,
-        useNativeDriver: true,
-      }),
-      Animated.spring(translateY, {
-        toValue: 0,
-        tension: 80,
-        friction: 10,
-        useNativeDriver: true,
-      }),
-      Animated.spring(rotate, {
-        toValue: 0,
-        tension: 80,
-        friction: 10,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scale, {
-        toValue: 1,
-        tension: 80,
-        friction: 10,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      isAnimating.current = false;
-    });
-  }, [translateX, translateY, rotate, scale]);
+  const handleSwipeComplete = useCallback(
+    (direction: 'left' | 'right') => {
+      const action: SwipeAction = { direction, user };
+      onSwipe(action);
+    },
+    [onSwipe, user],
+  );
 
   const animateOffScreen = useCallback(
     (direction: 'left' | 'right') => {
-      if (isAnimating.current) return;
+      'worklet';
+      if (isAnimating.value) return;
 
-      isAnimating.current = true;
+      isAnimating.value = true;
       const toValue =
         direction === 'right' ? screenWidth * 1.5 : -screenWidth * 1.5;
-      const rotationValue = direction === 'right' ? 1.5 : -1.5;
 
-      Animated.parallel([
-        Animated.timing(translateX, {
-          toValue,
-          duration: ANIMATION_DURATION,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: ANIMATION_DURATION,
-          useNativeDriver: true,
-        }),
-        Animated.timing(rotate, {
-          toValue: rotationValue,
-          duration: ANIMATION_DURATION,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scale, {
-          toValue: 0.85,
-          duration: ANIMATION_DURATION,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        // Reset all values for next card
-        translateX.setValue(0);
-        translateY.setValue(0);
-        rotate.setValue(0);
-        opacity.setValue(1);
-        scale.setValue(1);
-        isAnimating.current = false;
+      translateX.value = withTiming(
+        toValue,
+        { duration: ANIMATION_DURATION },
+        finished => {
+          if (finished) {
+            translateX.value = 0;
+            translateY.value = 0;
+            scale.value = 1;
+            isAnimating.value = false;
+            runOnJS(handleSwipeComplete)(direction);
+          }
+        },
+      );
 
-        const action: SwipeAction = { direction, user };
-        onSwipe(action);
-      });
+      scale.value = withTiming(0.85, { duration: ANIMATION_DURATION });
     },
-    [translateX, translateY, rotate, opacity, scale, onSwipe, user],
+    [translateX, translateY, scale, isAnimating, handleSwipeComplete],
   );
 
-  const handleGestureEvent = Animated.event(
-    [{ nativeEvent: { translationX: translateX, translationY: translateY } }],
-    { useNativeDriver: true },
-  );
+  const resetCard = useCallback(() => {
+    'worklet';
 
-  const handleStateChange = useCallback(
-    (event: any) => {
-      if (!isTop || isAnimating.current) return;
+    isAnimating.value = true;
 
-      const { state, translationX, velocityX, translationY } =
-        event.nativeEvent;
+    translateX.value = withSpring(0, SPRING_CONFIG, finished => {
+      if (finished) {
+        isAnimating.value = false;
+      }
+    });
+    translateY.value = withSpring(0, SPRING_CONFIG);
+    scale.value = withSpring(1, SPRING_CONFIG);
+  }, [translateX, translateY, scale, isAnimating]);
 
-      if (state === State.ACTIVE) {
-        Animated.spring(scale, {
-          toValue: 0.97,
-          tension: 100,
-          friction: 7,
-          useNativeDriver: true,
-        }).start();
-      } else if (state === State.END) {
-        const isHorizontalSwipe =
-          Math.abs(translationX) > Math.abs(translationY);
-        const hasEnoughDistance = Math.abs(translationX) > SWIPE_THRESHOLD;
-        const hasEnoughVelocity =
-          Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD;
+  const panGesture = Gesture.Pan()
+    .enabled(isTop)
+    .onStart(() => {
+      'worklet';
 
-        const shouldSwipe =
-          isHorizontalSwipe && (hasEnoughDistance || hasEnoughVelocity);
+      if (isAnimating.value) {
+        isAnimating.value = false;
+      }
+      scale.value = withSpring(0.97, SPRING_CONFIG);
+    })
+    .onUpdate(event => {
+      'worklet';
 
-        if (shouldSwipe) {
-          const direction = translationX > 0 ? 'right' : 'left';
-          animateOffScreen(direction);
-        } else {
-          resetCard();
-        }
-      } else if (state === State.CANCELLED || state === State.FAILED) {
+      if (!isAnimating.value) {
+        translateX.value = event.translationX;
+        translateY.value = event.translationY;
+      }
+    })
+    .onEnd(event => {
+      'worklet';
+
+      if (isAnimating.value) return;
+
+      const isHorizontalSwipe =
+        Math.abs(event.translationX) > Math.abs(event.translationY);
+      const hasEnoughDistance = Math.abs(event.translationX) > SWIPE_THRESHOLD;
+      const hasEnoughVelocity =
+        Math.abs(event.velocityX) > SWIPE_VELOCITY_THRESHOLD;
+
+      const shouldSwipe =
+        isHorizontalSwipe && (hasEnoughDistance || hasEnoughVelocity);
+
+      if (shouldSwipe) {
+        const direction = event.translationX > 0 ? 'right' : 'left';
+        animateOffScreen(direction);
+      } else {
         resetCard();
       }
-    },
-    [isTop, animateOffScreen, resetCard, scale],
-  );
+    })
+    .onFinalize(() => {
+      'worklet';
 
-  useEffect(() => {
-    const listener = translateX.addListener(({ value }) => {
-      const rotationValue = (value * ROTATION_FACTOR) / CARD_WIDTH;
-      rotate.setValue(rotationValue);
+      if (!isAnimating.value) {
+        scale.value = withSpring(1, SPRING_CONFIG);
+      }
     });
 
-    return () => {
-      translateX.removeListener(listener);
+  const animatedCardStyle = useAnimatedStyle(() => {
+    const rotation = interpolate(
+      translateX.value,
+      [-CARD_WIDTH, 0, CARD_WIDTH],
+      [-20, 0, 20],
+      Extrapolate.CLAMP,
+    );
+
+    return {
+      transform: [
+        { translateX: translateX.value },
+        { translateY: translateY.value },
+        { rotate: `${rotation}deg` },
+        { scale: scale.value },
+      ],
     };
-  }, [translateX, rotate]);
-
-  const rotateInterpolate = rotate.interpolate({
-    inputRange: [-2, -1, 0, 1, 2],
-    outputRange: ['-20deg', '-10deg', '0deg', '10deg', '20deg'],
-    extrapolate: 'clamp',
   });
 
-  const likeOpacity = translateX.interpolate({
-    inputRange: [0, SWIPE_THRESHOLD / 2, SWIPE_THRESHOLD],
-    outputRange: [0, 0.5, 1],
-    extrapolate: 'clamp',
+  const animatedLikeStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      translateX.value,
+      [0, SWIPE_THRESHOLD / 2, SWIPE_THRESHOLD],
+      [0, 0.5, 1],
+      Extrapolate.CLAMP,
+    );
+
+    const likeScale = interpolate(
+      translateX.value,
+      [0, SWIPE_THRESHOLD],
+      [0.8, 1.1],
+      Extrapolate.CLAMP,
+    );
+
+    return {
+      opacity,
+      transform: [{ scale: likeScale }],
+    };
   });
 
-  const likeScale = translateX.interpolate({
-    inputRange: [0, SWIPE_THRESHOLD],
-    outputRange: [0.8, 1.1],
-    extrapolate: 'clamp',
-  });
+  const animatedNopeStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      translateX.value,
+      [-SWIPE_THRESHOLD, -SWIPE_THRESHOLD / 2, 0],
+      [1, 0.5, 0],
+      Extrapolate.CLAMP,
+    );
 
-  const nopeOpacity = translateX.interpolate({
-    inputRange: [-SWIPE_THRESHOLD, -SWIPE_THRESHOLD / 2, 0],
-    outputRange: [1, 0.5, 0],
-    extrapolate: 'clamp',
-  });
+    const nopeScale = interpolate(
+      translateX.value,
+      [-SWIPE_THRESHOLD, 0],
+      [1.1, 0.8],
+      Extrapolate.CLAMP,
+    );
 
-  const nopeScale = translateX.interpolate({
-    inputRange: [-SWIPE_THRESHOLD, 0],
-    outputRange: [1.1, 0.8],
-    extrapolate: 'clamp',
+    return {
+      opacity,
+      transform: [{ scale: nopeScale }],
+    };
   });
 
   return (
-    <PanGestureHandler
-      onGestureEvent={handleGestureEvent}
-      onHandlerStateChange={handleStateChange}
-      enabled={isTop && !isAnimating.current}
-      activeOffsetX={[-10, 10]}
-      failOffsetY={[-40, 40]}
-      shouldCancelWhenOutside={false}
-    >
-      <Animated.View
+    <GestureDetector gesture={panGesture}>
+      <Reanimated.View
         style={[
           styles.card,
+          animatedCardStyle,
           {
-            transform: [
-              { translateX },
-              { translateY },
-              { rotate: rotateInterpolate },
-              { scale },
-            ],
-            opacity,
             zIndex: isTop ? 100 : 1,
             elevation: isTop ? 10 : 5,
           },
@@ -226,36 +211,22 @@ export const UserCard: React.FC<UserCardProps> = ({
         />
 
         {/* Like indicator */}
-        <Animated.View
-          style={[
-            styles.indicator,
-            styles.likeIndicator,
-            {
-              opacity: likeOpacity,
-              transform: [{ scale: likeScale }],
-            },
-          ]}
+        <Reanimated.View
+          style={[styles.indicator, styles.likeIndicator, animatedLikeStyle]}
         >
           <View style={styles.indicatorContent}>
             <Text style={[styles.indicatorText, styles.likeText]}>LIKE</Text>
           </View>
-        </Animated.View>
+        </Reanimated.View>
 
         {/* Nope indicator */}
-        <Animated.View
-          style={[
-            styles.indicator,
-            styles.nopeIndicator,
-            {
-              opacity: nopeOpacity,
-              transform: [{ scale: nopeScale }],
-            },
-          ]}
+        <Reanimated.View
+          style={[styles.indicator, styles.nopeIndicator, animatedNopeStyle]}
         >
           <View style={styles.indicatorContent}>
             <Text style={[styles.indicatorText, styles.nopeText]}>NOPE</Text>
           </View>
-        </Animated.View>
+        </Reanimated.View>
 
         {/* User info */}
         <View style={styles.infoContainer}>
@@ -276,8 +247,8 @@ export const UserCard: React.FC<UserCardProps> = ({
             </Text>
           )}
         </View>
-      </Animated.View>
-    </PanGestureHandler>
+      </Reanimated.View>
+    </GestureDetector>
   );
 };
 
