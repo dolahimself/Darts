@@ -1,97 +1,337 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 💕 Darts Dating App
 
-# Getting Started
+A modern, feature-rich dating application built with React Native and TypeScript, featuring swipeable user cards, real-time messaging, and beautiful UI/UX design.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+![React Native](https://img.shields.io/badge/React_Native-0.72.6-blue.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-4.8.4-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-## Step 1: Start Metro
+## 📱 Features
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- 🔥 **Dating-App-Style Swiping** - Smooth card animations with like/dislike gestures
+- 💬 **Real-Time Chat Interface** - Beautiful messaging UI with auto-responses
+- 🧭 **Bottom Tab Navigation** - Easy navigation between Discover, Messages, and Profile
+- 👤 **User Profiles** - View and manage user information
+- 📊 **User Statistics** - Track your matches and interactions
+- 🎨 **Modern UI/UX** - Clean, intuitive interface with smooth animations
+- 📱 **Fully Responsive** - Works seamlessly on all device sizes
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## 🚀 Quick Start
 
-```sh
-# Using npm
-npm start
+### Prerequisites
 
-# OR using Yarn
-yarn start
-```
+Before you begin, ensure you have the following installed:
 
-## Step 2: Build and run your app
+- **Node.js** (v16 or higher) - [Download here](https://nodejs.org/)
+- **npm** or **yarn** package manager
+- **React Native CLI** - Install with: `npm install -g react-native-cli`
+- **Android Studio** (for Android development) - [Download here](https://developer.android.com/studio)
+- **Xcode** (for iOS development, Mac only) - Available on Mac App Store
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### Installation
 
-### Android
+1. **Clone the repository**
 
-```sh
-# Using npm
+   ```bash
+   git clone https://github.com/dolahimself/Darts.git
+   cd Darts
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Install iOS dependencies (Mac only)**
+
+   ```bash
+   cd ios && pod install && cd ..
+   ```
+
+4. **Start Metro Bundler**
+
+   ```bash
+   npm start
+   # or
+   yarn start
+   ```
+
+5. **Run the app**
+
+   **For Android:**
+
+   ```bash
+   npm run android
+   # or
+   yarn android
+   ```
+
+   **For iOS (Mac only):**
+
+   ```bash
+   npm run ios
+   # or
+   yarn ios
+   ```
+
+## 📖 How to Use the App
+
+### 1. 🏠 **Discover Screen (Home)**
+
+This is where you'll find potential matches!
+
+#### How to Swipe:
+
+- **👉 Swipe Right** - Like a user
+
+  - Drag the card to the right
+  - You'll see a green "LIKE" indicator appear
+  - Release when the card is past the threshold
+  - A match alert will appear!
+
+- **👈 Swipe Left** - Pass on a user
+
+  - Drag the card to the left
+  - You'll see a red "NOPE" indicator appear
+  - Release when the card is past the threshold
+  - The card will disappear
+
+#### Tips:
+
+- The card under the top card is slightly visible - that's your next match!
+- Quick flicks work too - you don't need to drag all the way
+- The card rotates as you drag for a natural feel
+- When you run out of cards, you'll see a "All caught up!" message
+
+### 2. 💬 **Messages Screen (Chats)**
+
+View all your conversations in one place!
+
+#### Features:
+
+- **Chat List** - See all your matches and conversations
+
+  - Red dot indicates unread messages
+  - Badge shows unread message count
+  - Last message preview
+  - Timestamp shows when the last message was sent
+
+- **Opening a Chat**
+  - Tap any conversation to open it
+  - You'll see the full chat history
+  - Messages are styled differently:
+    - Your messages: Blue bubbles on the right
+    - Their messages: Gray bubbles on the left
+
+#### How to Send Messages:
+
+1. Type your message in the text input at the bottom
+2. Tap the "Send" button (or press Enter)
+3. Your message appears instantly
+4. The other person will respond automatically (demo feature!)
+
+#### Tips:
+
+- Scroll up to see older messages
+- The chat auto-scrolls to the latest message
+- Timestamps show when messages were sent
+- The back arrow (←) takes you back to the chat list
+
+### 3. 👤 **Profile Screen**
+
+Manage your profile and app settings!
+
+#### What You Can Do:
+
+- **View Your Profile**
+
+  - Profile photo with camera icon (for editing)
+  - Name and age display
+  - Personal bio
+  - Location information
+
+- **View Statistics**
+
+  - Likes Given - How many people you've liked
+  - Matches - Total number of matches
+  - Active Chats - Conversations in progress
+
+- **Quick Actions**
+
+  - ✏️ Edit Profile - Update your information
+  - 🎯 Discovery Preferences - Set matching preferences
+  - 🔒 Privacy Settings - Control who sees what
+  - 💬 Chat Settings - Customize your chat experience
+  - 📱 Notifications - Manage notification preferences
+
+- **Other Options**
+  - View app information and version
+  - Logout button at the bottom
+
+#### Tips:
+
+- Tap any option to access that feature
+- The settings icon (⚙️) in the top right provides additional settings
+- Your profile photo can be changed by tapping the camera icon
+
+## 🛠️ Troubleshooting
+
+### App Won't Start?
+
+```bash
+# Clear cache and restart
+npx react-native start --reset-cache
+
+# Clean Android build
+cd android && ./gradlew clean && cd ..
 npm run android
 
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+# Clean iOS build (Mac only)
+cd ios && xcodebuild clean && cd ..
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Gesture Not Working?
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+- Make sure you're swiping on the **top card only**
+- The card beneath is not interactive
+- Swipe at least 120 pixels or use a quick flick motion
+- Ensure `react-native-gesture-handler` is properly installed
 
-## Step 3: Modify your app
+### Images Not Loading?
 
-Now that you have successfully run the app, let's make changes!
+- Check your internet connection
+- The app uses remote images from Unsplash
+- Try restarting the app
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+### Chat Not Responding?
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+- Auto-responses have a 1-3 second delay (by design)
+- Make sure you've sent a message first
+- Check if the app is still running
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## 📂 Project Structure
 
-## Congratulations! :tada:
+```
+Darts/
+├── src/
+│   ├── components/          # Reusable components
+│   │   ├── UserCard.tsx     # Swipeable card component
+│   │   └── ChatMessage.tsx  # Chat message bubble
+│   │   └── ProfileCard.tsx   # Profile Navigation Card component
+│   ├── screens/             # App screens
+│   │   ├── HomeScreen.tsx   # Discover/swipe screen
+│   │   ├── ChatsScreen.tsx  # Chat list screen
+│   │   ├── ChatDetailScreen.tsx  # Individual chat
+│   │   └── ProfileScreen.tsx     # User profile
+│   ├── navigation/          # Navigation setup
+│   │   └── AppNavigator.tsx # Navigation configuration
+│   ├── types/               # TypeScript types
+│   │   └── index.ts         # Type definitions
+│   └── data/                # Mock data
+│       └── mock.ts          # Sample users and chats
+├── android/                 # Android native code
+├── ios/                     # iOS native code
+├── App.tsx                  # App entry point
+├── package.json             # Dependencies
+└── tsconfig.json             # TypeScript config
+```
 
-You've successfully run and modified your React Native App. :partying_face:
+## 🎨 Customization
 
-### Now what?
+### Change App Colors
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+Edit the color values in the component style sheets:
 
-# Troubleshooting
+```typescript
+// Primary color (pink/red)
+color: '#FF4458';
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+// Success color (green for likes)
+color: '#4CAF50';
 
-# Learn More
+// Error color (red for passes)
+color: '#F44336';
+```
 
-To learn more about React Native, take a look at the following resources:
+## 📱 Building for Production
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+### Android APK
+
+```bash
+cd android
+./gradlew assembleRelease
+
+# APK location:
+# android/app/build/outputs/apk/release/app-release.apk
+```
+
+### Android App Bundle (for Play Store)
+
+```bash
+cd android
+./gradlew bundleRelease
+
+# Bundle location:
+# android/app/build/outputs/bundle/release/app-release.aab
+```
+
+### iOS (Mac only)
+
+```bash
+# Open in Xcode
+open ios/Darts.xcworkspace
+
+# Select Product > Archive
+# Then follow the export wizard
+```
+
+## 🔒 Privacy & Data
+
+- **No Backend** - All data is stored locally (mock data)
+- **No Analytics** - No user tracking or analytics
+- **No Authentication** - Demo app without login
+- **Safe Testing** - All features work offline
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👨‍💻 Developer
+
+Built with ❤️ for a Senior React Native Developer position assessment.
+
+### Tech Stack:
+
+- React Native 0.72.6
+- TypeScript 4.8.4
+- React Navigation
+- React Native Gesture Handler
+- React Native Reanimated
+
+## 📞 Support
+
+If you encounter any issues or have questions:
+
+1. Check the [Troubleshooting](#-troubleshooting) section
+2. Review the [React Native documentation](https://reactnative.dev/docs/getting-started)
+3. Open an issue in the GitHub repository
+
+---
+
+**Enjoy swiping! 💕**
+
+Made with React Native and TypeScript by \DOlA
