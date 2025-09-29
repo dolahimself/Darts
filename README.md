@@ -79,7 +79,7 @@ Before you begin, ensure you have the following installed:
 
 ## 📖 How to Use the App
 
-### 1. 🏠 **Discover Screen (Home)**
+### 1. 🏠 **Home Screen **
 
 This is where you'll find potential matches!
 
@@ -106,7 +106,7 @@ This is where you'll find potential matches!
 - The card rotates as you drag for a natural feel
 - When you run out of cards, you'll see a "All caught up!" message
 
-### 2. 💬 **Messages Screen (Chats)**
+### 2. 💬 **Chats Screen **
 
 View all your conversations in one place!
 
@@ -194,25 +194,6 @@ cd ios && xcodebuild clean && cd ..
 npm run ios
 ```
 
-### Gesture Not Working?
-
-- Make sure you're swiping on the **top card only**
-- The card beneath is not interactive
-- Swipe at least 120 pixels or use a quick flick motion
-- Ensure `react-native-gesture-handler` is properly installed
-
-### Images Not Loading?
-
-- Check your internet connection
-- The app uses remote images from Unsplash
-- Try restarting the app
-
-### Chat Not Responding?
-
-- Auto-responses have a 1-3 second delay (by design)
-- Make sure you've sent a message first
-- Check if the app is still running
-
 ## 📂 Project Structure
 
 ```
@@ -221,7 +202,7 @@ Darts/
 │   ├── components/          # Reusable components
 │   │   ├── UserCard.tsx     # Swipeable card component
 │   │   └── ChatMessage.tsx  # Chat message bubble
-│   │   └── ProfileCard.tsx   # Profile Navigation Card component
+│   │   └── ProfileCard.tsx  # Profile Navigation Card component
 │   ├── screens/             # App screens
 │   │   ├── HomeScreen.tsx   # Discover/swipe screen
 │   │   ├── ChatsScreen.tsx  # Chat list screen
@@ -310,10 +291,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Developer
-
-Built with ❤️ for a Senior React Native Developer position assessment.
-
 ### Tech Stack:
 
 - React Native 0.72.6
@@ -322,16 +299,6 @@ Built with ❤️ for a Senior React Native Developer position assessment.
 - React Native Gesture Handler
 - React Native Reanimated
 
-## 📞 Support
-
-If you encounter any issues or have questions:
-
-1. Check the [Troubleshooting](#-troubleshooting) section
-2. Review the [React Native documentation](https://reactnative.dev/docs/getting-started)
-3. Open an issue in the GitHub repository
-
----
-
-**Enjoy swiping! 💕**
+**Enjoy! 💕**
 
 Made with React Native and TypeScript by \DOlA
